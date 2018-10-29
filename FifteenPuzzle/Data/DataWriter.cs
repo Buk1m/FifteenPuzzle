@@ -5,7 +5,7 @@ namespace FifteenPuzzle.Data
 {
     public static class DataWriter
     {
-        public static void WriteSolution(string fileName, int solutionLength, char[] steps)
+        public static void WriteSolution(string fileName, int solutionLength, string steps)
         {
             using ( StreamWriter streamWriter = new StreamWriter(fileName) )
             {

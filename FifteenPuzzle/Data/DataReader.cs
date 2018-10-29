@@ -1,10 +1,11 @@
 ﻿using System.IO;
+using FifteenPuzzle.Model;
 
 namespace FifteenPuzzle
 {
     public static class DataReader
     {
-        public static byte[] ReadBoard(string filename)
+        public static Board ReadBoard(string filename)
         {
             using ( StreamReader streamReader = new StreamReader(filename) )
             {
@@ -23,7 +24,7 @@ namespace FifteenPuzzle
                     }
                 }
 
-                return board;
+                return new Board(board,x,y);
             }
         }
     }

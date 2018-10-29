@@ -1,4 +1,4 @@
-﻿namespace FifteenPuzzle.Data
+﻿namespace FifteenPuzzle.Model
 {
     public class Information
     {
