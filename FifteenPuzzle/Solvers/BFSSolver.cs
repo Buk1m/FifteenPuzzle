@@ -1,28 +1,42 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FifteenPuzzle.Model;
 
 namespace FifteenPuzzle.Solvers
 {
     public class BFSSolver : SolverBase
     {
-        protected readonly HashSet<Node> Explored = new HashSet<Node>();
         private readonly List<Operator> _order;
         private readonly Queue<Node> _queue = new Queue<Node>();
 
         public BFSSolver(Node startingNode, string strategy) : base(startingNode)
         {
             _order = Converters.StrategyToOperatorsConverter(strategy);
-            Explored.Add(startingNode);
+            Information.StatesVisited++;
+//            Explored.Add( string.Join(",",CurrentNode.Board.Values ));
         }
 
         public override Node Solve()
         {
+            Stopwatch.Start();
             while ( !CurrentNode.IsSolution() )
             {
+                Explored.Add(string.Join(",", CurrentNode.Board.Values));
+
                 AddChildNodes(CurrentNode);
+                if ( CurrentNode.IsSolution() )
+                {
+                    break;
+                }
+
                 CurrentNode = _queue.Dequeue();
             }
 
+            Information.DeepestLevelReached = CurrentNode.CurrentPathCost;
+
+            Stopwatch.Stop();
+            Information.ProcessingTime = Stopwatch.ElapsedMilliseconds;
+            Information.StatesProcessed = Explored.Count;
             return CurrentNode;
         }
 
@@ -31,18 +45,20 @@ namespace FifteenPuzzle.Solvers
             foreach ( Operator availableMove in node.GetMoves(_order) )
             {
                 Node nextNode = MoveTo(node, availableMove);
-                if ( !Explored.Contains(nextNode) )
+                if ( !Explored.Contains(string.Join(",", nextNode.Board.Values)) )
                 {
-                    _queue.Enqueue(nextNode);
+                    Information.StatesVisited++;
                     if ( nextNode.IsSolution() )
                     {
+                        CurrentNode = nextNode;
                         return;
                     }
 
-                    Explored.Add(nextNode);
+                    _queue.Enqueue(nextNode);
                 }
             }
         }
+
 
         public Node MoveTo(Node node, Operator direction)
         {

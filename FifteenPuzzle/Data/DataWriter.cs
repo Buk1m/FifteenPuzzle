@@ -19,20 +19,19 @@ namespace FifteenPuzzle.Data
                 for ( int i = 0; i < solutionLength; i++ )
                 {
                     streamWriter.Write(steps[i]);
-                    streamWriter.Write(" ");
                 }
             }
         }
 
-        public static void WriteInformation(string filename, Information info)
+        public static void WriteInformation(string filename)
         {
             using ( StreamWriter streamWriter = new StreamWriter(filename) )
             {
-                streamWriter.WriteLine(info.SolutionLength);
-                streamWriter.WriteLine(info.StatesVisited);
-                streamWriter.WriteLine(info.StatesProcessed);
-                streamWriter.WriteLine(info.DeepestLevelReached);
-                streamWriter.WriteLine(info.ProcessingTime);
+                streamWriter.WriteLine(Information.SolutionLength);
+                streamWriter.WriteLine(Information.StatesVisited);
+                streamWriter.WriteLine(Information.StatesProcessed);
+                streamWriter.WriteLine(Information.DeepestLevelReached);
+                streamWriter.WriteLine(Information.ProcessingTime);
             }
         }
     }

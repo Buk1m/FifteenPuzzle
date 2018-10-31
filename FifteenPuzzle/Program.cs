@@ -9,12 +9,12 @@ namespace FifteenPuzzle
     {
         static void Main(string[] args)
         {
-            args = null;
+//            args = null;
             string algorithm = args?[0] ?? "bfs";
-            string strategy = args?[1] ?? "LDRU";
-            string inputFileName = args?[2] ?? "4x4_08_00443.txt";
+            string strategy = args?[1] ?? "LUDR";
+            string inputFileName = args?[2] ?? "4x4_01_00001.txt";
             string solutionFileName = args?[3] ?? "4x4_01_00001_sol.txt";
-            //string infoFileName = args?[4];
+            string infoFileName = args?[4] ?? "4x4_01_00001_stats.txt";
 
 
             Board board = DataReader.ReadBoard(inputFileName);
@@ -30,14 +30,15 @@ namespace FifteenPuzzle
                     path += solution.Operator.ToString();
                     steps++;
                 }
-                
+
                 solution = solution.Parent;
             }
 
+            Information.SolutionLength = steps;
             path = string.Join("", path.Reverse());
             //TODO: add values
             DataWriter.WriteSolution(solutionFileName, steps, path);
-            //DataWriter.WriteInformation(infoFileName, null);
+            DataWriter.WriteInformation(infoFileName);
         }
     }
 }

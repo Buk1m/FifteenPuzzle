@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace FifteenPuzzle.Model
@@ -12,11 +13,6 @@ namespace FifteenPuzzle.Model
         public Operator Operator { get; }
         public int CurrentPathCost { get; }
 
-        public override int GetHashCode()
-        {
-            return Board.Values.GetHashCode();
-        }
-
         #endregion
 
         #region Constructors
@@ -24,13 +20,14 @@ namespace FifteenPuzzle.Model
         public Node(Board board)
         {
             Board = board;
+            
         }
 
         public Node(Board board, Node parent, Operator direction)
         {
             Board = board;
             Parent = parent;
-            Operator = direction;
+            Operator = direction;  
             CurrentPathCost = parent.CurrentPathCost + 1;
         }
 

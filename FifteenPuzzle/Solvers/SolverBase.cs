@@ -1,12 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using FifteenPuzzle.Model;
 
 namespace FifteenPuzzle.Solvers
 {
     public abstract class SolverBase
     {
-        protected readonly HashSet<Node> Explored = new HashSet<Node>();
+        protected readonly HashSet<string> Explored = new HashSet<string>();
         protected Node CurrentNode;
+        protected readonly Stopwatch Stopwatch = new Stopwatch();
+
 
         protected SolverBase(Node startingNode)
         {
