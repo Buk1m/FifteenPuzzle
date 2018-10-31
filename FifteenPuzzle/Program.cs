@@ -7,7 +7,7 @@ namespace FifteenPuzzle
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main( string[] args )
         {
 //            args = null;
             string algorithm = args?[0] ?? "bfs";
@@ -17,15 +17,15 @@ namespace FifteenPuzzle
             string infoFileName = args?[4] ?? "4x4_01_00001_stats.txt";
 
 
-            Board board = DataReader.ReadBoard(inputFileName);
-            Node startingNode = new Node(board);
-            SolverBase solver = AlgorithmFactory.Algorithm[algorithm].Invoke(startingNode, strategy);
+            Board board = DataReader.ReadBoard( inputFileName );
+            Node startingNode = new Node( board );
+            SolverBase solver = AlgorithmFactory.Algorithm[algorithm].Invoke( startingNode, strategy );
             Node solution = solver.Solve();
             string path = "";
             int steps = 0;
-            while ( solution != null )
+            while (solution != null)
             {
-                if ( solution.Operator != Operator.N )
+                if (solution.Operator != Operator.N)
                 {
                     path += solution.Operator.ToString();
                     steps++;
@@ -35,10 +35,10 @@ namespace FifteenPuzzle
             }
 
             Information.SolutionLength = steps;
-            path = string.Join("", path.Reverse());
+            path = string.Join( "", path.Reverse() );
             //TODO: add values
-            DataWriter.WriteSolution(solutionFileName, steps, path);
-            DataWriter.WriteInformation(infoFileName);
+            DataWriter.WriteSolution( solutionFileName, steps, path );
+            DataWriter.WriteInformation( infoFileName );
         }
     }
 }
