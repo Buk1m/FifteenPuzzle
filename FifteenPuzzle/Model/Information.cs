@@ -6,6 +6,6 @@
         public static int StatesVisited { get; set; }
         public static int StatesProcessed { get; set; }
         public static int DeepestLevelReached { get; set; }
-        public static long ProcessingTime { get; set; }
+        public static double ProcessingTime { get; set; }
     }
 }

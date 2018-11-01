@@ -35,7 +35,7 @@ namespace FifteenPuzzle.Solvers
             Information.DeepestLevelReached = CurrentNode.CurrentPathCost;
 
             Stopwatch.Stop();
-            Information.ProcessingTime = Stopwatch.ElapsedMilliseconds;
+            Information.ProcessingTime = Stopwatch.Elapsed.TotalMilliseconds;
             Information.StatesProcessed = Explored.Count;
             return CurrentNode;
         }

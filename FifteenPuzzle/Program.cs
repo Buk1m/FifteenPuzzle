@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FifteenPuzzle.Data;
 using FifteenPuzzle.Model;
 using FifteenPuzzle.Solvers;
@@ -9,12 +10,12 @@ namespace FifteenPuzzle
     {
         static void Main(string[] args)
         {
-//            args = null;
-            string algorithm = args?[0] ?? "bfs";
-            string strategy = args?[1] ?? "LUDR";
-            string inputFileName = args?[2] ?? "4x4_01_00001.txt";
-            string solutionFileName = args?[3] ?? "4x4_01_00001_sol.txt";
-            string infoFileName = args?[4] ?? "4x4_01_00001_stats.txt";
+//           args = null;
+            string algorithm = args?[0] ?? "astr";
+            string strategy = args?[1] ?? "hamm";
+            string inputFileName = args?[2] ?? "4x4_03_00008.txt";
+            string solutionFileName = args?[3] ?? "4x4_03_00008_sol.txt";
+            string infoFileName = args?[4] ?? "4x4_03_00008_stats.txt";
 
 
             Board board = DataReader.ReadBoard(inputFileName);
