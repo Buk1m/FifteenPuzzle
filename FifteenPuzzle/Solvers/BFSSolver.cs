@@ -20,7 +20,7 @@ namespace FifteenPuzzle.Solvers
             Stopwatch.Start();
             while (!CurrentNode.IsSolution())
             {
-                Explored.Add( string.Join( ",", CurrentNode.Board.Values ) );
+                Explored.Add( CurrentNode.ToString() );
 
                 AddChildNodes( CurrentNode );
                 if (CurrentNode.IsSolution())
@@ -61,7 +61,7 @@ namespace FifteenPuzzle.Solvers
 
         private bool ExploredNotContainsNode( Node nextNode )
         {
-            return !Explored.Contains( string.Join( ",", nextNode.Board.Values ) );
+            return !Explored.Contains( CurrentNode.ToString() );
         }
 
         private Node MoveTo( Node node, Operator direction )

@@ -10,12 +10,11 @@ namespace FifteenPuzzle
         static void Main( string[] args )
         {
 //            args = null;
-            string algorithm = args?[0] ?? "bfs";
-            string strategy = args?[1] ?? "LUDR";
-            string inputFileName = args?[2] ?? "4x4_01_00001.txt";
-            string solutionFileName = args?[3] ?? "4x4_01_00001_sol.txt";
-            string infoFileName = args?[4] ?? "4x4_01_00001_stats.txt";
-
+            string algorithm = args?[0] ?? "dfs";
+            string strategy = args?[1] ?? "RDUL";
+            string inputFileName = args?[2] ?? "4x4_03_00003.txt";
+            string solutionFileName = args?[3] ?? "4x4_03_00003_sol.txt";
+            string infoFileName = args?[4] ?? "4x4_03_00003_stats.txt";
 
             Board board = DataReader.ReadBoard( inputFileName );
             Node startingNode = new Node( board );

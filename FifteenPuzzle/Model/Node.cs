@@ -53,6 +53,19 @@ namespace FifteenPuzzle.Model
             return true;
         }
 
+        public override string ToString()
+        {
+            /*if (Parent != null)
+            {
+                return string.Join( ",", Board.Values) + string.Join( ",", Parent.Board.Values );
+            }
+            else
+            {
+                return string.Join( ",", Board.Values) + "root";
+            }*/
+            return string.Join( ",", Board.Values );
+        }
+
         #region Privates
 
         private bool IsZeroAtWrongPosition()
