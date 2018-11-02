@@ -9,7 +9,7 @@ namespace FifteenPuzzle.Solvers
             throw new System.NotImplementedException();
         }
 
-        public DFSSolver(Node startingNode) : base(startingNode)
+        public DFSSolver( Node startingNode ) : base( startingNode )
         {
         }
     }

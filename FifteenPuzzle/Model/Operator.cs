@@ -6,12 +6,16 @@ namespace FifteenPuzzle.Model
     {
         // None
         N,
+
         // Left
         L,
+
         // Right
         R,
+
         // Up
         U,
+
         // Down
         D
     }

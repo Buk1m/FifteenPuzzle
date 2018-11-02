@@ -6,16 +6,37 @@ namespace FifteenPuzzle.Solvers
 {
     public abstract class SolverBase
     {
-        protected readonly HashSet<string> Explored = new HashSet<string>();
-        protected Node CurrentNode;
-        protected readonly Stopwatch Stopwatch = new Stopwatch();
+        #region Constructor
 
-
-        protected SolverBase(Node startingNode)
+        protected SolverBase( Node startingNode )
         {
             CurrentNode = startingNode;
         }
 
+        #endregion
+
+        #region Protected
+
+        protected readonly HashSet<string> Explored = new HashSet<string>();
+        protected Node CurrentNode;
+        protected readonly Stopwatch Stopwatch = new Stopwatch();
+
+        protected Node MoveTo( Node node, Operator direction )
+        {
+            Board newBoard = node.Board.Clone() as Board;
+            newBoard.MoveEmptyPuzzle( direction );
+            if ( Explored.Contains( string.Join( ",", newBoard.Values ) ) )
+                return null;
+
+            return new Node( newBoard, CurrentNode, direction );
+        }
+
+        #endregion
+
+        #region Abstract
+
         public abstract Node Solve();
+
+        #endregion
     }
 }
