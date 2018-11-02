@@ -9,88 +9,110 @@ namespace FifteenPuzzle.Model
         public byte X { get; }
         public byte Y { get; }
         public int EmptyPuzzleIndex { get; private set; }
-        public List<Operator> AvailableMoves { get; }
+        public List<Operator> AvailableMoves { get; set; }
 
-        public Board(byte[] values, byte x, byte y)
+        public Board( byte[] values, byte x, byte y )
         {
             Values = values;
             X = x;
             Y = y;
-            AvailableMoves = new List<Operator>();
-            FindEmptyPuzzle();
-            FindAvailableMoves();
+            EmptyPuzzleIndex = FindEmptyPuzzle();
+            AvailableMoves = FindAvailableMoves();
         }
 
-        public void MoveEmptyPuzzle(Operator direction)
+        public void MoveEmptyPuzzle( Operator direction )
         {
-            if ( direction == Operator.L )
+            if (direction == Operator.L)
             {
-                SwapBytes(EmptyPuzzleIndex - 1);
+                SwapBytes( EmptyPuzzleIndex - 1 );
             }
 
-            if ( direction == Operator.R )
+            if (direction == Operator.R)
             {
-                SwapBytes(EmptyPuzzleIndex + 1);
+                SwapBytes( EmptyPuzzleIndex + 1 );
             }
 
-            if ( direction == Operator.U )
+            if (direction == Operator.U)
             {
-                SwapBytes(EmptyPuzzleIndex - X);
+                SwapBytes( EmptyPuzzleIndex - X );
             }
 
-            if ( direction == Operator.D )
+            if (direction == Operator.D)
             {
-                SwapBytes(EmptyPuzzleIndex + X);
+                SwapBytes( EmptyPuzzleIndex + X );
             }
         }
 
-        private void SwapBytes(int index)
+        private void SwapBytes( int index )
         {
-            byte value = Values[EmptyPuzzleIndex];
+            byte buffer = Values[EmptyPuzzleIndex];
             Values[EmptyPuzzleIndex] = Values[index];
-            Values[index] = value;
+            Values[index] = buffer;
             EmptyPuzzleIndex = index;
-            FindAvailableMoves();
+            AvailableMoves = FindAvailableMoves();
         }
 
         #region Private
 
-        private void FindEmptyPuzzle()
+        private int FindEmptyPuzzle()
         {
-            EmptyPuzzleIndex = Array.FindIndex(Values, value => value == 0);
+            return Array.FindIndex( Values, value => value == 0 );
         }
 
-        private void FindAvailableMoves()
+        private List<Operator> FindAvailableMoves()
         {
-            AvailableMoves.Clear();
+            List<Operator> availableMoves = new List<Operator>();
             int posX = EmptyPuzzleIndex % X;
             int posY = EmptyPuzzleIndex / Y;
-            if ( posX > 0 )
+
+            if (HasLeftNeighbour( posX ))
             {
-                AvailableMoves.Add(Operator.L);
+                availableMoves.Add( Operator.L );
             }
 
-            if ( posX < X - 1 )
+            if (HasRightNeighbour( posX ))
             {
-                AvailableMoves.Add(Operator.R);
+                availableMoves.Add( Operator.R );
             }
 
-            if ( posY > 0 )
+            if (HasUpperNeighbour( posY ))
             {
-                AvailableMoves.Add(Operator.U);
+                availableMoves.Add( Operator.U );
             }
 
-            if ( posY < Y - 1 )
+            if (HasBottomNeighbour( posY ))
             {
-                AvailableMoves.Add(Operator.D);
+                availableMoves.Add( Operator.D );
             }
+
+            return availableMoves;
+        }
+
+        private bool HasBottomNeighbour( int posY )
+        {
+            return posY < Y - 1;
+        }
+
+        private static bool HasUpperNeighbour( int posY )
+        {
+            return posY > 0;
+        }
+
+        private bool HasRightNeighbour( int posX )
+        {
+            return posX < X - 1;
+        }
+
+        private bool HasLeftNeighbour( int posX )
+        {
+            return posX > 0;
         }
 
         #endregion
 
         public object Clone()
         {
-            return new Board((byte[]) Values.Clone(), X, Y);
+            return new Board( (byte[]) Values.Clone(), X, Y );
         }
     }
 }

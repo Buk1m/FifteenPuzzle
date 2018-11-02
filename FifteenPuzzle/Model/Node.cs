@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace FifteenPuzzle.Model
@@ -17,42 +16,60 @@ namespace FifteenPuzzle.Model
 
         #region Constructors
 
-        public Node(Board board)
+        public Node( Board board )
         {
             Board = board;
-            
         }
 
-        public Node(Board board, Node parent, Operator direction)
+        public Node( Board board, Node parent, Operator direction )
         {
             Board = board;
             Parent = parent;
-            Operator = direction;  
+            Operator = direction;
             CurrentPathCost = parent.CurrentPathCost + 1;
         }
 
         #endregion
 
-        public List<Operator> GetMoves(List<Operator> order)
+        public List<Operator> GetMoves( List<Operator> order )
         {
-            return order.Intersect(Board.AvailableMoves).ToList();
+            return order.Intersect( Board.AvailableMoves ).ToList();
         }
 
         public bool IsSolution()
         {
-            if ( Board.Values[Board.Values.Length - 1] != 0 )
+            if (IsZeroAtWrongPosition())
                 return false;
-            for ( int i = 0; i < Board.X; i++ )
+            for (int i = 0; i < Board.X; i++)
             {
-                for ( int j = 0; j < Board.Y; j++ )
+                for (int j = 0; j < Board.Y; j++)
                 {
-                    if ( j + i * Board.X != Board.Values.Length - 1 )
-                        if ( Board.Values[j + i * Board.X] != j + i * Board.X + 1 )
+                    if (IsNotLastElement( i, j ))
+                        if (IsTileAtWrongPosition( i, j ))
                             return false;
                 }
             }
 
             return true;
         }
+
+        #region Privates
+
+        private bool IsZeroAtWrongPosition()
+        {
+            return Board.Values[Board.Values.Length - 1] != 0;
+        }
+
+        private bool IsNotLastElement( int i, int j )
+        {
+            return j + i * Board.X != Board.Values.Length - 1;
+        }
+
+        private bool IsTileAtWrongPosition( int i, int j )
+        {
+            return Board.Values[j + i * Board.X] != j + i * Board.X + 1;
+        }
+
+        #endregion
     }
 }

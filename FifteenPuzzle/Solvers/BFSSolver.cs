@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FifteenPuzzle.Model;
 
 namespace FifteenPuzzle.Solvers
@@ -9,9 +8,9 @@ namespace FifteenPuzzle.Solvers
         private readonly List<Operator> _order;
         private readonly Queue<Node> _queue = new Queue<Node>();
 
-        public BFSSolver(Node startingNode, string strategy) : base(startingNode)
+        public BFSSolver( Node startingNode, string strategy ) : base( startingNode )
         {
-            _order = Converters.StrategyToOperatorsConverter(strategy);
+            _order = Converters.StrategyToOperatorsConverter( strategy );
             Information.StatesVisited++;
 //            Explored.Add( string.Join(",",CurrentNode.Board.Values ));
         }
@@ -19,12 +18,12 @@ namespace FifteenPuzzle.Solvers
         public override Node Solve()
         {
             Stopwatch.Start();
-            while ( !CurrentNode.IsSolution() )
+            while (!CurrentNode.IsSolution())
             {
-                Explored.Add(string.Join(",", CurrentNode.Board.Values));
+                Explored.Add( string.Join( ",", CurrentNode.Board.Values ) );
 
-                AddChildNodes(CurrentNode);
-                if ( CurrentNode.IsSolution() )
+                AddChildNodes( CurrentNode );
+                if (CurrentNode.IsSolution())
                 {
                     break;
                 }
@@ -37,35 +36,40 @@ namespace FifteenPuzzle.Solvers
             Stopwatch.Stop();
             Information.ProcessingTime = Stopwatch.Elapsed.TotalMilliseconds;
             Information.StatesProcessed = Explored.Count;
+
             return CurrentNode;
         }
 
-        public void AddChildNodes(Node node)
+        private void AddChildNodes( Node node )
         {
-            foreach ( Operator availableMove in node.GetMoves(_order) )
+            foreach (Operator availableMove in node.GetMoves( _order ))
             {
-                Node nextNode = MoveTo(node, availableMove);
-                if ( !Explored.Contains(string.Join(",", nextNode.Board.Values)) )
+                Node nextNode = MoveTo( node, availableMove );
+                if (ExploredNotContainsNode( nextNode ))
                 {
                     Information.StatesVisited++;
-                    if ( nextNode.IsSolution() )
+                    if (nextNode.IsSolution())
                     {
                         CurrentNode = nextNode;
                         return;
                     }
 
-                    _queue.Enqueue(nextNode);
+                    _queue.Enqueue( nextNode );
                 }
             }
         }
 
+        private bool ExploredNotContainsNode( Node nextNode )
+        {
+            return !Explored.Contains( string.Join( ",", nextNode.Board.Values ) );
+        }
 
-        public Node MoveTo(Node node, Operator direction)
+        private Node MoveTo( Node node, Operator direction )
         {
             Board newBoard = node.Board.Clone() as Board;
-            newBoard.MoveEmptyPuzzle(direction);
+            newBoard.MoveEmptyPuzzle( direction );
 
-            return new Node(newBoard, CurrentNode, direction);
+            return new Node( newBoard, CurrentNode, direction );
         }
     }
 }
