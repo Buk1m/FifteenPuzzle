@@ -21,16 +21,6 @@ namespace FifteenPuzzle.Solvers
         protected Node CurrentNode;
         protected readonly Stopwatch Stopwatch = new Stopwatch();
 
-        /*protected SolverBase(Node startingNode)
-        {
-            Board newBoard = node.Board.Clone() as Board;
-            newBoard.MoveEmptyPuzzle( direction );
-            if ( Explored.Contains( string.Join( ",", newBoard.Values ) ) )
-                return null;
-
-            return new Node( newBoard, CurrentNode, direction );
-        }*/
-
         #endregion
 
         #region Abstract
