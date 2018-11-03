@@ -21,7 +21,7 @@ namespace FifteenPuzzle.Solvers
         protected Node CurrentNode;
         protected readonly Stopwatch Stopwatch = new Stopwatch();
 
-        protected Node MoveTo( Node node, Operator direction )
+        protected SolverBase(Node startingNode)
         {
             Board newBoard = node.Board.Clone() as Board;
             newBoard.MoveEmptyPuzzle( direction );

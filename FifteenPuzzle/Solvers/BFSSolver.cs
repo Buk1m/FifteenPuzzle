@@ -22,7 +22,7 @@ namespace FifteenPuzzle.Solvers
             Stopwatch.Start();
             while ( !CurrentNode.IsSolution() )
             {
-                Explored.Add( string.Join( ",", CurrentNode.Board.Values ) );
+                Explored.Add( CurrentNode.ToString() );
 
                 AddChildNodes( CurrentNode );
                 if ( CurrentNode.IsSolution() )
@@ -51,23 +51,27 @@ namespace FifteenPuzzle.Solvers
 
         private void AddChildNodes( Node node )
         {
-            foreach ( Operator availableMove in node.GetMoves( _order ) )
+            foreach (Node adjacent in node.GetAdjacents( _order ))
             {
-                Node nextNode = MoveTo( node, availableMove );
-                if ( nextNode != null )
+                if (ExploredNotContainsNode( adjacent ) )
                 {
                     Information.StatesVisited++;
-                    if ( nextNode.IsSolution() )
+                    if ( adjacent.IsSolution())
                     {
-                        CurrentNode = nextNode;
+                        CurrentNode = adjacent;
                         return;
                     }
 
-                    _queue.Enqueue( nextNode );
+                    _queue.Enqueue( adjacent );
                 }
             }
         }
 
+        private bool ExploredNotContainsNode( Node nextNode )
+        {
+            return !Explored.Contains( nextNode.ToString() );
+        }
+        
         #endregion
     }
 }
