@@ -6,7 +6,7 @@ namespace FifteenPuzzle.Solvers
     public class DFSSolver : SolverBase
     {
         private readonly List<Operator> _order;
-        private readonly Stack<Node> _stack = new Stack<Node>();
+        private readonly Stack<Node> _frontier = new Stack<Node>();
         private const int MaxDepth = 20;
 
         public DFSSolver( Node startingNode, string strategy ) : base( startingNode )
@@ -19,11 +19,11 @@ namespace FifteenPuzzle.Solvers
         public override Node Solve()
         {
             Stopwatch.Start();
-            _stack.Push( CurrentNode );
+            _frontier.Push( CurrentNode );
 
             while (!CurrentNode.IsSolution())
             {
-                CurrentNode = _stack.Pop();
+                CurrentNode = _frontier.Pop();
                 Explored.Add( CurrentNode.ToString() );
                 if (CurrentNode.IsSolution())
                 {
@@ -42,28 +42,34 @@ namespace FifteenPuzzle.Solvers
             return CurrentNode;
         }
 
+        #region Privates
 
         private void AddChildNodes( Node node )
         {
-            foreach (Operator availableMove in node.GetMoves( _order ))
+            if ( IsDepthGreaterThanMax( node ) )
             {
-                if ( IsDepthGreaterThanMax( node ) )
-                {
-                    return;
-                }
-                Node nextNode = MoveTo( node, availableMove );
-                if (ExploredNotContainsNode( nextNode ) || !_stack.Contains( nextNode ))
+                return;
+            }
+
+            foreach ( Node adjacent in node.GetAdjacents( _order ) )
+            {
+                if ( ExploredNotContainsNode( adjacent ) || FrontierNotContainsNode( adjacent ) )
                 {
                     Information.StatesVisited++;
-                    if (nextNode.IsSolution())
+                    if ( adjacent.IsSolution() )
                     {
-                        CurrentNode = nextNode;
+                        CurrentNode = adjacent;
                         return;
                     }
 
-                    _stack.Push( nextNode );
+                    _frontier.Push( adjacent );
                 }
             }
+        }
+
+        private bool FrontierNotContainsNode( Node nextNode )
+        {
+            return !_frontier.Contains( nextNode );
         }
 
         private bool IsDepthGreaterThanMax( Node node )
@@ -74,14 +80,8 @@ namespace FifteenPuzzle.Solvers
         private bool ExploredNotContainsNode( Node nextNode )
         {
             return !Explored.Contains( nextNode.ToString() );
-        }
+        } 
 
-        private Node MoveTo( Node node, Operator direction )
-        {
-            Board newBoard = node.Board.Clone() as Board;
-            newBoard.MoveEmptyPuzzle( direction );
-
-            return new Node( newBoard, CurrentNode, direction );
-        }
+        #endregion
     }
 }

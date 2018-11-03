@@ -12,7 +12,6 @@ namespace FifteenPuzzle.Solvers
         {
             _order = Converters.StrategyToOperatorsConverter( strategy );
             Information.StatesVisited++;
-//            Explored.Add( string.Join(",",CurrentNode.Board.Values ));
         }
 
         public override Node Solve()
@@ -42,34 +41,25 @@ namespace FifteenPuzzle.Solvers
 
         private void AddChildNodes( Node node )
         {
-            foreach (Operator availableMove in node.GetMoves( _order ))
+            foreach (Node adjacent in node.GetAdjacents( _order ))
             {
-                Node nextNode = MoveTo( node, availableMove );
-                if (ExploredNotContainsNode( nextNode ))
+                if (ExploredNotContainsNode( adjacent ) )
                 {
                     Information.StatesVisited++;
-                    if (nextNode.IsSolution())
+                    if ( adjacent.IsSolution())
                     {
-                        CurrentNode = nextNode;
+                        CurrentNode = adjacent;
                         return;
                     }
 
-                    _queue.Enqueue( nextNode );
+                    _queue.Enqueue( adjacent );
                 }
             }
         }
 
         private bool ExploredNotContainsNode( Node nextNode )
         {
-            return !Explored.Contains( CurrentNode.ToString() );
-        }
-
-        private Node MoveTo( Node node, Operator direction )
-        {
-            Board newBoard = node.Board.Clone() as Board;
-            newBoard.MoveEmptyPuzzle( direction );
-
-            return new Node( newBoard, CurrentNode, direction );
+            return !Explored.Contains( nextNode.ToString() );
         }
     }
 }

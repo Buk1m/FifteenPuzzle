@@ -31,22 +31,30 @@ namespace FifteenPuzzle.Model
 
         #endregion
 
-        public List<Operator> GetMoves( List<Operator> order )
+        public IEnumerable<Node> GetAdjacents( List<Operator> order )
         {
-            return order.Intersect( Board.AvailableMoves ).ToList();
+            List<Operator> moves = GetMoves( order );
+            return moves.Select( move => MoveTo( this, move ) );
         }
 
         public bool IsSolution()
         {
             if (IsZeroAtWrongPosition())
+            {
                 return false;
+            }
+                
             for (int i = 0; i < Board.X; i++)
             {
                 for (int j = 0; j < Board.Y; j++)
                 {
                     if (IsNotLastElement( i, j ))
+                    {
                         if (IsTileAtWrongPosition( i, j ))
+                        {
                             return false;
+                        }
+                    }
                 }
             }
 
@@ -55,14 +63,6 @@ namespace FifteenPuzzle.Model
 
         public override string ToString()
         {
-            /*if (Parent != null)
-            {
-                return string.Join( ",", Board.Values) + string.Join( ",", Parent.Board.Values );
-            }
-            else
-            {
-                return string.Join( ",", Board.Values) + "root";
-            }*/
             return string.Join( ",", Board.Values );
         }
 
@@ -81,6 +81,19 @@ namespace FifteenPuzzle.Model
         private bool IsTileAtWrongPosition( int i, int j )
         {
             return Board.Values[j + i * Board.X] != j + i * Board.X + 1;
+        }
+
+        private List<Operator> GetMoves( List<Operator> order )
+        {
+            return order.Intersect( Board.AvailableMoves ).ToList();
+        }
+
+        private Node MoveTo( Node node, Operator direction )
+        {
+            Board newBoard = node.Board.Clone() as Board;
+            newBoard.MoveEmptyPuzzle( direction );
+
+            return new Node( newBoard, this, direction );
         }
 
         #endregion

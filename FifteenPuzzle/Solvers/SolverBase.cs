@@ -10,7 +10,6 @@ namespace FifteenPuzzle.Solvers
         protected Node CurrentNode;
         protected readonly Stopwatch Stopwatch = new Stopwatch();
 
-
         protected SolverBase(Node startingNode)
         {
             CurrentNode = startingNode;
