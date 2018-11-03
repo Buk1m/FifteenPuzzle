@@ -11,14 +11,7 @@ namespace FifteenPuzzle.Solvers
 
         public AStarSolver( Node startingNode, string strategy ) : base( startingNode )
         {
-            if ( strategy == "hamm" )
-            {
-                _heuristicFunction = HammingFunction;
-            }
-            else
-            {
-                _heuristicFunction = ManhattanFunction;
-            }
+            _heuristicFunction = _strategies[strategy];
 
             _queue = new SortedList<Tuple<string, int>, Node>(
                 Comparer<Tuple<string, int>>.Create( ( t1, t2 ) =>
@@ -33,18 +26,17 @@ namespace FifteenPuzzle.Solvers
         {
             Stopwatch.Start();
 
-            while ( !CurrentNode.IsSolution() )
+            while (!CurrentNode.IsSolution())
             {
-                Explored.Add( string.Join( ",", CurrentNode.Board.Values ) );
-
+                Explored.Add( CurrentNode.ToString() );
                 AddChildNodes( CurrentNode );
 
-                if ( CurrentNode.CurrentPathCost > Information.DeepestLevelReached )
+                if (CurrentNode.CurrentPathCost > Information.DeepestLevelReached)
                 {
                     Information.DeepestLevelReached = CurrentNode.CurrentPathCost;
                 }
 
-                if ( CurrentNode.IsSolution() )
+                if (CurrentNode.IsSolution())
                 {
                     break;
                 }
@@ -70,28 +62,38 @@ namespace FifteenPuzzle.Solvers
         private readonly SortedList<Tuple<string, int>, Node> _queue;
         private readonly HeuristicFunction _heuristicFunction;
 
+        private readonly Dictionary<string, HeuristicFunction> _strategies = new Dictionary<string, HeuristicFunction>()
+        {
+            {"hamm", HammingFunction},
+            {"manh", ManhattanFunction}
+        };
+
         private void AddChildNodes( Node node )
         {
-            foreach ( Operator availableMove in node.Board.AvailableMoves )
+            foreach (Node adjacent in node.GetAdjacents( node.Board.AvailableMoves ))
             {
-                Node nextNode = MoveTo( node, availableMove );
-                if ( nextNode != null && !_queue.ContainsKey( new Tuple<string, int>(
-                         string.Join( ",", nextNode.Board.Values ),
-                         _heuristicFunction( nextNode ) ) ) )
+                if (adjacent != null && QueueNotContains( adjacent ))
                 {
                     Information.StatesVisited++;
-                    if ( nextNode.IsSolution() )
+                    if (adjacent.IsSolution())
                     {
-                        CurrentNode = nextNode;
+                        CurrentNode = adjacent;
                         return;
                     }
 
                     _queue.Add(
-                        new Tuple<string, int>( string.Join( ",", nextNode.Board.Values ),
-                            _heuristicFunction( nextNode ) ),
-                        nextNode );
+                        Tuple.Create( adjacent.ToString(),
+                            _heuristicFunction( adjacent ) ),
+                        adjacent );
                 }
             }
+        }
+
+        private bool QueueNotContains( Node adjacent )
+        {
+            return !_queue.ContainsKey( Tuple.Create(
+                adjacent.ToString(),
+                _heuristicFunction( adjacent ) ) );
         }
 
         private static int HammingFunction( Node node )
@@ -101,21 +103,31 @@ namespace FifteenPuzzle.Solvers
             int dimensionY = node.Board.Y;
             int stepCost = node.CurrentPathCost;
 
-            for ( int i = 0; i < dimensionY; i++ )
+            for (int i = 0; i < dimensionY; i++)
             {
-                for ( int j = 0; j < dimensionX; j++ )
+                for (int j = 0; j < dimensionX; j++)
                 {
-                    bool isLastTile = i == dimensionY - 1 && j == dimensionX - 1;
-                    if ( !isLastTile )
+                    if (IsNotLastTile( i, j, dimensionX, dimensionY ))
                     {
-                        bool isTileAtWrongPosition = board[j + i * dimensionX] != j + i * dimensionX + 1;
-                        if ( isTileAtWrongPosition )
+                        if (IsTileAtWrongPosition( board, i, j, dimensionX ))
+                        {
                             stepCost++;
+                        }
                     }
                 }
             }
 
             return stepCost;
+        }
+
+        private static bool IsNotLastTile( int i, int j, int dimensionX, int dimensionY )
+        {
+            return ( i == dimensionY - 1 ) && ( j == dimensionX - 1 );
+        }
+
+        private static bool IsTileAtWrongPosition( byte[] board, int i, int j, int dimensionX )
+        {
+            return board[j + i * dimensionX] != ( j + i * dimensionX + 1 );
         }
 
         private static int ManhattanFunction( Node node )
@@ -125,12 +137,12 @@ namespace FifteenPuzzle.Solvers
             int dimensionY = node.Board.Y;
             int stepCost = node.CurrentPathCost;
 
-            for ( int i = 0; i < dimensionX; i++ )
+            for (int i = 0; i < dimensionX; i++)
             {
-                for ( int j = 0; j < dimensionY; j++ )
+                for (int j = 0; j < dimensionY; j++)
                 {
                     int value = board[j + i * dimensionX];
-                    if ( value != 0 )
+                    if (value != 0)
                     {
                         int x = ( value - 1 ) % dimensionX;
                         int y = ( value - 1 ) / dimensionX;

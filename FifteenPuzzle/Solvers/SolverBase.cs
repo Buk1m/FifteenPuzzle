@@ -21,7 +21,7 @@ namespace FifteenPuzzle.Solvers
         protected Node CurrentNode;
         protected readonly Stopwatch Stopwatch = new Stopwatch();
 
-        protected SolverBase(Node startingNode)
+        /*protected SolverBase(Node startingNode)
         {
             Board newBoard = node.Board.Clone() as Board;
             newBoard.MoveEmptyPuzzle( direction );
@@ -29,7 +29,7 @@ namespace FifteenPuzzle.Solvers
                 return null;
 
             return new Node( newBoard, CurrentNode, direction );
-        }
+        }*/
 
         #endregion
 
