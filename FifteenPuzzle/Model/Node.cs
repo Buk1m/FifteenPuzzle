@@ -9,7 +9,7 @@ namespace FifteenPuzzle.Model
 
         public Board Board { get; }
         public Node Parent { get; }
-        public Operator Operator { get; }
+        public Operator LastOperator { get; }
         public int CurrentPathCost { get; }
 
         #endregion
@@ -25,7 +25,7 @@ namespace FifteenPuzzle.Model
         {
             Board = board;
             Parent = parent;
-            Operator = direction;
+            LastOperator = direction;
             CurrentPathCost = parent.CurrentPathCost + 1;
         }
 
@@ -46,7 +46,7 @@ namespace FifteenPuzzle.Model
                 
             for (int i = 0; i < Board.X; i++)
             {
-                for (int j = 0; j < Board.Y; j++)
+                for ( int j = 0; j < Board.Y; j++ )
                 {
                     if (IsNotLastElement( i, j ))
                     {

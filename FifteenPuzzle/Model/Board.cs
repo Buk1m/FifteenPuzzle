@@ -22,26 +22,36 @@ namespace FifteenPuzzle.Model
 
         public void MoveEmptyPuzzle( Operator direction )
         {
-            if (direction == Operator.L)
+            if ( direction == Operator.L )
             {
                 SwapBytes( EmptyPuzzleIndex - 1 );
+                return;
             }
 
-            if (direction == Operator.R)
+            if ( direction == Operator.R )
             {
                 SwapBytes( EmptyPuzzleIndex + 1 );
+                return;
             }
 
-            if (direction == Operator.U)
+            if ( direction == Operator.U )
             {
                 SwapBytes( EmptyPuzzleIndex - X );
+                return;
             }
 
-            if (direction == Operator.D)
+            if ( direction == Operator.D )
             {
                 SwapBytes( EmptyPuzzleIndex + X );
             }
         }
+
+        public object Clone()
+        {
+            return new Board( (byte[]) Values.Clone(), X, Y );
+        }
+
+        #region Private
 
         private void SwapBytes( int index )
         {
@@ -51,8 +61,6 @@ namespace FifteenPuzzle.Model
             EmptyPuzzleIndex = index;
             AvailableMoves = FindAvailableMoves();
         }
-
-        #region Private
 
         private int FindEmptyPuzzle()
         {
@@ -65,22 +73,22 @@ namespace FifteenPuzzle.Model
             int posX = EmptyPuzzleIndex % X;
             int posY = EmptyPuzzleIndex / Y;
 
-            if (HasLeftNeighbour( posX ))
+            if ( HasLeftNeighbour( posX ) )
             {
                 availableMoves.Add( Operator.L );
             }
 
-            if (HasRightNeighbour( posX ))
+            if ( HasRightNeighbour( posX ) )
             {
                 availableMoves.Add( Operator.R );
             }
 
-            if (HasUpperNeighbour( posY ))
+            if ( HasUpperNeighbour( posY ) )
             {
                 availableMoves.Add( Operator.U );
             }
 
-            if (HasBottomNeighbour( posY ))
+            if ( HasBottomNeighbour( posY ) )
             {
                 availableMoves.Add( Operator.D );
             }
@@ -109,10 +117,5 @@ namespace FifteenPuzzle.Model
         }
 
         #endregion
-
-        public object Clone()
-        {
-            return new Board( (byte[]) Values.Clone(), X, Y );
-        }
     }
 }

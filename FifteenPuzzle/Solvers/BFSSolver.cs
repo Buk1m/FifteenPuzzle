@@ -5,8 +5,7 @@ namespace FifteenPuzzle.Solvers
 {
     public class BFSSolver : SolverBase
     {
-        private readonly List<Operator> _order;
-        private readonly Queue<Node> _queue = new Queue<Node>();
+        #region Constructor
 
         public BFSSolver( Node startingNode, string strategy ) : base( startingNode )
         {
@@ -14,15 +13,19 @@ namespace FifteenPuzzle.Solvers
             Information.StatesVisited++;
         }
 
+        #endregion
+
+        #region Public
+
         public override Node Solve()
         {
             Stopwatch.Start();
-            while (!CurrentNode.IsSolution())
+            while ( !CurrentNode.IsSolution() )
             {
                 Explored.Add( CurrentNode.ToString() );
 
                 AddChildNodes( CurrentNode );
-                if (CurrentNode.IsSolution())
+                if ( CurrentNode.IsSolution() )
                 {
                     break;
                 }
@@ -30,14 +33,21 @@ namespace FifteenPuzzle.Solvers
                 CurrentNode = _queue.Dequeue();
             }
 
-            Information.DeepestLevelReached = CurrentNode.CurrentPathCost;
-
             Stopwatch.Stop();
+
+            Information.DeepestLevelReached = CurrentNode.CurrentPathCost;
             Information.ProcessingTime = Stopwatch.Elapsed.TotalMilliseconds;
             Information.StatesProcessed = Explored.Count;
 
             return CurrentNode;
         }
+
+        #endregion
+
+        #region Private
+
+        private readonly List<Operator> _order;
+        private readonly Queue<Node> _queue = new Queue<Node>();
 
         private void AddChildNodes( Node node )
         {
@@ -61,5 +71,7 @@ namespace FifteenPuzzle.Solvers
         {
             return !Explored.Contains( nextNode.ToString() );
         }
+        
+        #endregion
     }
 }

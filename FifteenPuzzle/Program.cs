@@ -5,39 +5,67 @@ using FifteenPuzzle.Solvers;
 
 namespace FifteenPuzzle
 {
-    class Program
+    internal class Program
     {
-        static void Main( string[] args )
+        private static void Main( string[] args )
         {
-//            args = null;
-            string algorithm = args?[0] ?? "dfs";
-            string strategy = args?[1] ?? "RDUL";
-            string inputFileName = args?[2] ?? "4x4_03_00003.txt";
-            string solutionFileName = args?[3] ?? "4x4_03_00003_sol.txt";
-            string infoFileName = args?[4] ?? "4x4_03_00003_stats.txt";
-
-            Board board = DataReader.ReadBoard( inputFileName );
-            Node startingNode = new Node( board );
-            SolverBase solver = AlgorithmFactory.Algorithm[algorithm].Invoke( startingNode, strategy );
+            ReadExecutionParams( args );
+            Board board = DataReader.ReadBoard( _boardFileName );
+            SolverBase solver = InitSolver( board );
             Node solution = solver.Solve();
+            SaveSolutionData( solution );
+        }
+
+        #region Private
+
+        private static string _algorithm;
+        private static string _strategy;
+        private static string _boardFileName;
+        private static string _solutionFileName;
+        private static string _statisticsFileName;
+
+        private static SolverBase InitSolver( Board board )
+        {
+            Node startingNode = new Node( board );
+            return AlgorithmFactory.Algorithm[_algorithm].Invoke( startingNode, _strategy );
+        }
+
+        private static void SaveSolutionData( Node solution )
+        {
+            string path = GetSolutionPath( solution );
+            Information.SolutionLength = path.Length;
+            DataWriter.WriteSolution( _solutionFileName, path );
+            DataWriter.WriteInformation( _statisticsFileName );
+        }
+
+        private static void ReadExecutionParams( string[] args )
+        {
+            if ( args.Length != 5 )
+                args = null;
+
+            _algorithm = args?[0] ?? "astr";
+            _strategy = args?[1] ?? "mann";
+            _boardFileName = args?[2] ?? "4x4_02_00001.txt";
+            _solutionFileName = args?[3] ?? "4x4_04_00017_sol.txt";
+            _statisticsFileName = args?[4] ?? "4x4_04_00017_stats.txt";
+        }
+
+        private static string GetSolutionPath( Node solution )
+        {
             string path = "";
-            int steps = 0;
-            while (solution != null)
+            while ( solution != null )
             {
-                if (solution.Operator != Operator.N)
+                if ( solution.LastOperator != Operator.N )
                 {
-                    path += solution.Operator.ToString();
-                    steps++;
+                    path += solution.LastOperator.ToString();
                 }
 
                 solution = solution.Parent;
             }
 
-            Information.SolutionLength = steps;
-            path = string.Join( "", path.Reverse() );
-            //TODO: add values
-            DataWriter.WriteSolution( solutionFileName, steps, path );
-            DataWriter.WriteInformation( infoFileName );
+            return string.Join( "", path.Reverse() );
         }
+
+        #endregion
     }
 }
