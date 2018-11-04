@@ -51,27 +51,19 @@ namespace FifteenPuzzle.Solvers
 
         private void AddChildNodes( Node node )
         {
-            foreach (Node adjacent in node.GetAdjacents( _order ))
+            foreach ( Node adjacent in node.GetNotExploredAdjacentNodes( _order, Explored ) )
             {
-                if (ExploredNotContainsNode( adjacent ) )
+                Information.StatesVisited++;
+                if ( adjacent.IsSolution() )
                 {
-                    Information.StatesVisited++;
-                    if ( adjacent.IsSolution())
-                    {
-                        CurrentNode = adjacent;
-                        return;
-                    }
-
-                    _queue.Enqueue( adjacent );
+                    CurrentNode = adjacent;
+                    return;
                 }
+
+                _queue.Enqueue( adjacent );
             }
         }
 
-        private bool ExploredNotContainsNode( Node nextNode )
-        {
-            return !Explored.Contains( nextNode.ToString() );
-        }
-        
         #endregion
     }
 }

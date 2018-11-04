@@ -13,9 +13,13 @@ namespace FifteenPuzzle.Solvers
         {
             _heuristicFunction = _strategies[strategy];
 
-            _queue = new SortedList<Tuple<string, int>, Node>(
-                Comparer<Tuple<string, int>>.Create( ( t1, t2 ) =>
-                    t1.Item1 == t2.Item1 ? 0 : t1.Item2 > t2.Item2 ? 1 : t1.Item2 < t2.Item2 ? -1 : 1 ) );
+            _frontier = new SortedList<Tuple<string, int>, Node>(
+                Comparer<Tuple<string, int>>.Create(
+                    ( firstNode, secondNode ) =>
+                        firstNode.Item1 == secondNode.Item1 ? 0 :
+                        firstNode.Item2 > secondNode.Item2 ? 1 :
+                        firstNode.Item2 < secondNode.Item2 ? -1 : 1 )
+            );
         }
 
         #endregion
@@ -26,24 +30,24 @@ namespace FifteenPuzzle.Solvers
         {
             Stopwatch.Start();
 
-            while (!CurrentNode.IsSolution())
+            while ( !CurrentNode.IsSolution() )
             {
                 Explored.Add( CurrentNode.ToString() );
                 AddChildNodes( CurrentNode );
 
-                if (CurrentNode.CurrentPathCost > Information.DeepestLevelReached)
+                if ( CurrentNode.CurrentPathCost > Information.DeepestLevelReached )
                 {
                     Information.DeepestLevelReached = CurrentNode.CurrentPathCost;
                 }
 
-                if (CurrentNode.IsSolution())
+                if ( CurrentNode.IsSolution() )
                 {
                     break;
                 }
 
-                KeyValuePair<Tuple<string, int>, Node> cheapestNode = _queue.First();
+                KeyValuePair<Tuple<string, int>, Node> cheapestNode = _frontier.First();
                 CurrentNode = cheapestNode.Value;
-                _queue.Remove( cheapestNode.Key );
+                _frontier.Remove( cheapestNode.Key );
             }
 
             Stopwatch.Stop();
@@ -59,7 +63,7 @@ namespace FifteenPuzzle.Solvers
 
         private delegate int HeuristicFunction( Node node );
 
-        private readonly SortedList<Tuple<string, int>, Node> _queue;
+        private readonly SortedList<Tuple<string, int>, Node> _frontier;
         private readonly HeuristicFunction _heuristicFunction;
 
         private readonly Dictionary<string, HeuristicFunction> _strategies = new Dictionary<string, HeuristicFunction>()
@@ -70,18 +74,18 @@ namespace FifteenPuzzle.Solvers
 
         private void AddChildNodes( Node node )
         {
-            foreach (Node adjacent in node.GetAdjacents( node.Board.AvailableMoves ))
+            foreach ( Node adjacent in node.GetNotExploredAdjacentNodes( node.Board.AvailableMoves, Explored ) )
             {
-                if (adjacent != null && QueueNotContains( adjacent ))
+                if ( FrontierNotContains( adjacent ) )
                 {
                     Information.StatesVisited++;
-                    if (adjacent.IsSolution())
+                    if ( adjacent.IsSolution() )
                     {
                         CurrentNode = adjacent;
                         return;
                     }
 
-                    _queue.Add(
+                    _frontier.Add(
                         Tuple.Create( adjacent.ToString(),
                             _heuristicFunction( adjacent ) ),
                         adjacent );
@@ -89,9 +93,9 @@ namespace FifteenPuzzle.Solvers
             }
         }
 
-        private bool QueueNotContains( Node adjacent )
+        private bool FrontierNotContains( Node adjacent )
         {
-            return !_queue.ContainsKey( Tuple.Create(
+            return !_frontier.ContainsKey( Tuple.Create(
                 adjacent.ToString(),
                 _heuristicFunction( adjacent ) ) );
         }
@@ -103,13 +107,13 @@ namespace FifteenPuzzle.Solvers
             int dimensionY = node.Board.Y;
             int stepCost = node.CurrentPathCost;
 
-            for (int i = 0; i < dimensionY; i++)
+            for ( int i = 0; i < dimensionY; i++ )
             {
-                for (int j = 0; j < dimensionX; j++)
+                for ( int j = 0; j < dimensionX; j++ )
                 {
-                    if (IsNotLastTile( i, j, dimensionX, dimensionY ))
+                    if ( IsNotLastTile( i, j, dimensionX, dimensionY ) )
                     {
-                        if (IsTileAtWrongPosition( board, i, j, dimensionX ))
+                        if ( IsTileAtWrongPosition( board, i, j, dimensionX ) )
                         {
                             stepCost++;
                         }
@@ -137,12 +141,12 @@ namespace FifteenPuzzle.Solvers
             int dimensionY = node.Board.Y;
             int stepCost = node.CurrentPathCost;
 
-            for (int i = 0; i < dimensionX; i++)
+            for ( int i = 0; i < dimensionX; i++ )
             {
-                for (int j = 0; j < dimensionY; j++)
+                for ( int j = 0; j < dimensionY; j++ )
                 {
                     int value = board[j + i * dimensionX];
-                    if (value != 0)
+                    if ( value != 0 )
                     {
                         int x = ( value - 1 ) % dimensionX;
                         int y = ( value - 1 ) / dimensionX;

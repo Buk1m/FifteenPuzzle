@@ -51,9 +51,9 @@ namespace FifteenPuzzle.Solvers
                 return;
             }
 
-            foreach ( Node adjacent in node.GetAdjacents( _order ) )
+            foreach ( Node adjacent in node.GetNotExploredAdjacentNodes( _order, Explored ) )
             {
-                if ( ExploredNotContainsNode( adjacent ) || FrontierNotContainsNode( adjacent ) )
+                if ( FrontierNotContainsNode( adjacent ) )
                 {
                     Information.StatesVisited++;
                     if ( adjacent.IsSolution() )
@@ -72,15 +72,10 @@ namespace FifteenPuzzle.Solvers
             return !_frontier.Contains( nextNode );
         }
 
-        private bool IsDepthGreaterThanMax( Node node )
+        private static bool IsDepthGreaterThanMax( Node node )
         {
             return node.CurrentPathCost > MaxDepth;
         }
-
-        private bool ExploredNotContainsNode( Node nextNode )
-        {
-            return !Explored.Contains( nextNode.ToString() );
-        } 
 
         #endregion
     }

@@ -62,6 +62,11 @@ namespace FifteenPuzzle.Model
             AvailableMoves = FindAvailableMoves();
         }
 
+        public override string ToString()
+        {
+            return string.Join( ",", Values );
+        }
+
         private int FindEmptyPuzzle()
         {
             return Array.FindIndex( Values, value => value == 0 );
