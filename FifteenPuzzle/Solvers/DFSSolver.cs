@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FifteenPuzzle.Model;
 
 namespace FifteenPuzzle.Solvers
@@ -20,20 +21,17 @@ namespace FifteenPuzzle.Solvers
         {
             Stopwatch.Start();
             _frontier.Push( CurrentNode );
-
-            while (!CurrentNode.IsSolution())
+            while ( !CurrentNode.IsSolution() )
             {
                 CurrentNode = _frontier.Pop();
-                Explored.Add( CurrentNode.ToString() );
-                if (CurrentNode.IsSolution())
-                {
-                    break;
-                }
-
+                Explored.Add( CurrentNode.ToString() + CurrentNode.CurrentPathCost );
                 AddChildNodes( CurrentNode );
-            }
 
-            Information.DeepestLevelReached = CurrentNode.CurrentPathCost;
+                if ( Information.DeepestLevelReached < CurrentNode.CurrentPathCost )
+                {
+                    Information.DeepestLevelReached = CurrentNode.CurrentPathCost;
+                }
+            }
 
             Stopwatch.Stop();
             Information.ProcessingTime = Stopwatch.Elapsed.TotalMilliseconds;
@@ -51,9 +49,9 @@ namespace FifteenPuzzle.Solvers
                 return;
             }
 
-            foreach ( Node adjacent in node.GetAdjacents( _order ) )
+            foreach ( Node adjacent in node.GetAdjacentNodes( _order ) )
             {
-                if ( ExploredNotContainsNode( adjacent ) || FrontierNotContainsNode( adjacent ) )
+                if ( ExploredNotContainsNode( adjacent ) )
                 {
                     Information.StatesVisited++;
                     if ( adjacent.IsSolution() )
@@ -67,21 +65,15 @@ namespace FifteenPuzzle.Solvers
             }
         }
 
-        private bool FrontierNotContainsNode( Node nextNode )
-        {
-            return !_frontier.Contains( nextNode );
-        }
-
         private bool IsDepthGreaterThanMax( Node node )
         {
-            return node.CurrentPathCost > MaxDepth;
+            return node.CurrentPathCost >= MaxDepth;
         }
 
         private bool ExploredNotContainsNode( Node nextNode )
         {
-            return !Explored.Contains( nextNode.ToString() );
-        } 
-
+            return !Explored.Contains( nextNode.ToString() + ( CurrentNode.CurrentPathCost - 1 ) );
+        }
         #endregion
     }
 }

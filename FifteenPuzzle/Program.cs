@@ -44,14 +44,15 @@ namespace FifteenPuzzle
                 args = null;
 
             _algorithm = args?[0] ?? "astr";
-            _strategy = args?[1] ?? "mann";
-            _boardFileName = args?[2] ?? "4x4_02_00001.txt";
-            _solutionFileName = args?[3] ?? "4x4_04_00017_sol.txt";
-            _statisticsFileName = args?[4] ?? "4x4_04_00017_stats.txt";
+            _strategy = args?[1] ?? "manh";
+            _boardFileName = args?[2] ?? "4x4_07_00009.txt";
+            _solutionFileName = args?[3] ?? "..txt";
+            _statisticsFileName = args?[4] ?? "...txt";
         }
 
-        private static string GetSolutionPath( Node solution )
+        public static string GetSolutionPath( Node solution )
         {
+
             string path = "";
             while ( solution != null )
             {

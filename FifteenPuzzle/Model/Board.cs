@@ -51,6 +51,11 @@ namespace FifteenPuzzle.Model
             return new Board( (byte[]) Values.Clone(), X, Y );
         }
 
+        public override string ToString()
+        {
+            return string.Join( ",", Values );
+        }
+
         #region Private
 
         private void SwapBytes( int index )
