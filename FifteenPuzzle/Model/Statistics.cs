@@ -1,6 +1,6 @@
 ﻿namespace FifteenPuzzle.Model
 {
-    public static class Information
+    public static class Statistics
     {
         public static int SolutionLength { get; set; }
         public static int StatesVisited { get; set; }

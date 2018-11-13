@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FifteenPuzzle.Model;
 
 namespace FifteenPuzzle.Solvers
 {
     public class DFSSolver : SolverBase
     {
+        private new readonly Dictionary<string, int> Explored = new Dictionary<string, int>();
         private readonly List<Operator> _order;
         private readonly Stack<Node> _frontier = new Stack<Node>();
         private const int MaxDepth = 20;
@@ -14,28 +14,41 @@ namespace FifteenPuzzle.Solvers
         {
             _order = Converters.StrategyToOperatorsConverter( strategy );
             _order.Reverse();
-            Information.StatesVisited++;
+            Statistics.StatesVisited++;
         }
 
         public override Node Solve()
         {
             Stopwatch.Start();
-            _frontier.Push( CurrentNode );
             while ( !CurrentNode.IsSolution() )
             {
-                CurrentNode = _frontier.Pop();
-                Explored.Add( CurrentNode.ToString() + CurrentNode.CurrentPathCost );
+                if ( !Explored.ContainsKey( CurrentNode.ToString() ) )
+                {
+                    Explored.Add( CurrentNode.ToString(), CurrentNode.CurrentPathCost );
+                }
+                else 
+                {
+                    Explored[CurrentNode.ToString()] = CurrentNode.CurrentPathCost;
+                }
+
                 AddChildNodes( CurrentNode );
 
-                if ( Information.DeepestLevelReached < CurrentNode.CurrentPathCost )
+                if ( CurrentNode.CurrentPathCost > Statistics.DeepestLevelReached )
                 {
-                    Information.DeepestLevelReached = CurrentNode.CurrentPathCost;
+                    Statistics.DeepestLevelReached = CurrentNode.CurrentPathCost;
                 }
+
+                if ( CurrentNode.IsSolution() )
+                {
+                    break;
+                }
+
+                CurrentNode = _frontier.Pop();
             }
 
             Stopwatch.Stop();
-            Information.ProcessingTime = Stopwatch.Elapsed.TotalMilliseconds;
-            Information.StatesProcessed = Explored.Count;
+            Statistics.ProcessingTime = Stopwatch.Elapsed.TotalMilliseconds;
+            Statistics.StatesProcessed = Explored.Count;
 
             return CurrentNode;
         }
@@ -49,11 +62,13 @@ namespace FifteenPuzzle.Solvers
                 return;
             }
 
-            foreach ( Node adjacent in node.GetAdjacentNodes( _order ) )
+            foreach ( Operator availableMove in node.GetMoves( _order ) )
             {
-                if ( ExploredNotContainsNode( adjacent ) )
+
+                Node adjacent = CurrentNode.MoveTo( node, availableMove, Explored );
+                if (  adjacent != null )
                 {
-                    Information.StatesVisited++;
+                    Statistics.StatesVisited++;
                     if ( adjacent.IsSolution() )
                     {
                         CurrentNode = adjacent;
@@ -72,8 +87,14 @@ namespace FifteenPuzzle.Solvers
 
         private bool ExploredNotContainsNode( Node nextNode )
         {
-            return !Explored.Contains( nextNode.ToString() + ( CurrentNode.CurrentPathCost - 1 ) );
+            if ( !Explored.ContainsKey( nextNode.ToString() ) )
+            {
+                return true;
+            }
+
+            return Explored[nextNode.ToString()] > nextNode.CurrentPathCost;
         }
+
         #endregion
     }
 }

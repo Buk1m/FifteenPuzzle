@@ -8,15 +8,14 @@ namespace FifteenPuzzle.Model
         public byte[] Values { get; }
         public byte X { get; }
         public byte Y { get; }
-        public int EmptyPuzzleIndex { get; private set; }
-        public List<Operator> AvailableMoves { get; set; }
+        public List<Operator> AvailableMoves { get; private set; }
 
         public Board( byte[] values, byte x, byte y )
         {
             Values = values;
             X = x;
             Y = y;
-            EmptyPuzzleIndex = FindEmptyPuzzle();
+            _emptyPuzzleIndex = FindEmptyPuzzle();
             AvailableMoves = FindAvailableMoves();
         }
 
@@ -24,25 +23,25 @@ namespace FifteenPuzzle.Model
         {
             if ( direction == Operator.L )
             {
-                SwapBytes( EmptyPuzzleIndex - 1 );
+                SwapBytes( _emptyPuzzleIndex - 1 );
                 return;
             }
 
             if ( direction == Operator.R )
             {
-                SwapBytes( EmptyPuzzleIndex + 1 );
+                SwapBytes( _emptyPuzzleIndex + 1 );
                 return;
             }
 
             if ( direction == Operator.U )
             {
-                SwapBytes( EmptyPuzzleIndex - X );
+                SwapBytes( _emptyPuzzleIndex - X );
                 return;
             }
 
             if ( direction == Operator.D )
             {
-                SwapBytes( EmptyPuzzleIndex + X );
+                SwapBytes( _emptyPuzzleIndex + X );
             }
         }
 
@@ -58,12 +57,13 @@ namespace FifteenPuzzle.Model
 
         #region Private
 
+        private int _emptyPuzzleIndex;
         private void SwapBytes( int index )
         {
-            byte buffer = Values[EmptyPuzzleIndex];
-            Values[EmptyPuzzleIndex] = Values[index];
+            byte buffer = Values[_emptyPuzzleIndex];
+            Values[_emptyPuzzleIndex] = Values[index];
             Values[index] = buffer;
-            EmptyPuzzleIndex = index;
+            _emptyPuzzleIndex = index;
             AvailableMoves = FindAvailableMoves();
         }
 
@@ -75,8 +75,8 @@ namespace FifteenPuzzle.Model
         private List<Operator> FindAvailableMoves()
         {
             List<Operator> availableMoves = new List<Operator>();
-            int posX = EmptyPuzzleIndex % X;
-            int posY = EmptyPuzzleIndex / Y;
+            int posX = _emptyPuzzleIndex % X;
+            int posY = _emptyPuzzleIndex / Y;
 
             if ( HasLeftNeighbour( posX ) )
             {
@@ -106,7 +106,7 @@ namespace FifteenPuzzle.Model
             return posY < Y - 1;
         }
 
-        private static bool HasUpperNeighbour( int posY )
+        private bool HasUpperNeighbour( int posY )
         {
             return posY > 0;
         }

@@ -35,11 +35,6 @@ namespace FifteenPuzzle.Solvers
                 Explored.Add( CurrentNode.ToString() );
                 AddChildNodes( CurrentNode );
 
-                if ( CurrentNode.CurrentPathCost > Information.DeepestLevelReached )
-                {
-                    Information.DeepestLevelReached = CurrentNode.CurrentPathCost;
-                }
-
                 if ( CurrentNode.IsSolution() )
                 {
                     break;
@@ -51,8 +46,9 @@ namespace FifteenPuzzle.Solvers
             }
 
             Stopwatch.Stop();
-            Information.ProcessingTime = Stopwatch.Elapsed.TotalMilliseconds;
-            Information.StatesProcessed = Explored.Count;
+            Statistics.DeepestLevelReached = CurrentNode.CurrentPathCost;
+            Statistics.ProcessingTime = Stopwatch.Elapsed.TotalMilliseconds;
+            Statistics.StatesProcessed = Explored.Count;
 
             return CurrentNode;
         }
@@ -74,11 +70,14 @@ namespace FifteenPuzzle.Solvers
 
         private void AddChildNodes( Node node )
         {
-            foreach ( Node adjacent in node.GetNotExploredAdjacentNodes( node.Board.AvailableMoves, Explored ) )
+            foreach ( Operator availableMove in node.Board.AvailableMoves )
             {
-                if ( FrontierNotContains( adjacent ) )
+                Node adjacent = CurrentNode.MoveTo( node, availableMove, Explored );
+                if ( adjacent != null && !_frontier.ContainsKey( new Tuple<string, int>(
+                         string.Join( ",", adjacent.Board.Values ),
+                         _heuristicFunction( adjacent ) ) ) )
                 {
-                    Information.StatesVisited++;
+                    Statistics.StatesVisited++;
                     if ( adjacent.IsSolution() )
                     {
                         CurrentNode = adjacent;
@@ -86,18 +85,11 @@ namespace FifteenPuzzle.Solvers
                     }
 
                     _frontier.Add(
-                        Tuple.Create( adjacent.ToString(),
+                        new Tuple<string, int>( string.Join( ",", adjacent.Board.Values ),
                             _heuristicFunction( adjacent ) ),
                         adjacent );
                 }
             }
-        }
-
-        private bool FrontierNotContains( Node adjacent )
-        {
-            return !_frontier.ContainsKey( Tuple.Create(
-                adjacent.ToString(),
-                _heuristicFunction( adjacent ) ) );
         }
 
         private static int HammingFunction( Node node )
@@ -123,7 +115,6 @@ namespace FifteenPuzzle.Solvers
 
             return stepCost;
         }
-
         private static bool IsNotLastTile( int i, int j, int dimensionX, int dimensionY )
         {
             return !(( i == dimensionY - 1 ) && ( j == dimensionX - 1 ));

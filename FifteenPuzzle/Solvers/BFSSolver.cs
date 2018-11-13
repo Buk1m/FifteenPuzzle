@@ -10,7 +10,7 @@ namespace FifteenPuzzle.Solvers
         public BFSSolver( Node startingNode, string strategy ) : base( startingNode )
         {
             _order = Converters.StrategyToOperatorsConverter( strategy );
-            Information.StatesVisited++;
+            Statistics.StatesVisited++;
         }
 
         #endregion
@@ -30,14 +30,14 @@ namespace FifteenPuzzle.Solvers
                     break;
                 }
 
-                CurrentNode = _queue.Dequeue();
+                CurrentNode = _frontier.Dequeue();
             }
 
             Stopwatch.Stop();
 
-            Information.DeepestLevelReached = CurrentNode.CurrentPathCost;
-            Information.ProcessingTime = Stopwatch.Elapsed.TotalMilliseconds;
-            Information.StatesProcessed = Explored.Count;
+            Statistics.DeepestLevelReached = CurrentNode.CurrentPathCost;
+            Statistics.ProcessingTime = Stopwatch.Elapsed.TotalMilliseconds;
+            Statistics.StatesProcessed = Explored.Count;
 
             return CurrentNode;
         }
@@ -47,20 +47,27 @@ namespace FifteenPuzzle.Solvers
         #region Private
 
         private readonly List<Operator> _order;
-        private readonly Queue<Node> _queue = new Queue<Node>();
+        private readonly Queue<Node> _frontier = new Queue<Node>();
 
         private void AddChildNodes( Node node )
         {
-            foreach ( Node adjacent in node.GetNotExploredAdjacentNodes( _order, Explored ) )
+            foreach ( Operator availableMove in node.GetMoves(_order) )
             {
-                Information.StatesVisited++;
-                if ( adjacent.IsSolution() )
+
+                Node adjacent = CurrentNode.MoveTo( node, availableMove, Explored );
+                if ( adjacent != null )
                 {
-                    CurrentNode = adjacent;
-                    return;
+                    Statistics.StatesVisited++;
+                    if ( adjacent.IsSolution() )
+                    {
+                        CurrentNode = adjacent;
+                        return;
+                    }
+
+                    _frontier.Enqueue( adjacent );
+
                 }
 
-                _queue.Enqueue( adjacent );
             }
         }
 

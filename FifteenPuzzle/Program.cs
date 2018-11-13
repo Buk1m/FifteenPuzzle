@@ -33,7 +33,7 @@ namespace FifteenPuzzle
         private static void SaveSolutionData( Node solution )
         {
             string path = GetSolutionPath( solution );
-            Information.SolutionLength = path.Length;
+            Statistics.SolutionLength = path.Length;
             DataWriter.WriteSolution( _solutionFileName, path );
             DataWriter.WriteInformation( _statisticsFileName );
         }
@@ -43,9 +43,9 @@ namespace FifteenPuzzle
             if ( args.Length != 5 )
                 args = null;
 
-            _algorithm = args?[0] ?? "astr";
-            _strategy = args?[1] ?? "manh";
-            _boardFileName = args?[2] ?? "4x4_07_00009.txt";
+            _algorithm = args?[0] ?? "dfs";
+            _strategy = args?[1] ?? "rdul";
+            _boardFileName = args?[2] ?? "4x4_05_00021.txt";
             _solutionFileName = args?[3] ?? "..txt";
             _statisticsFileName = args?[4] ?? "...txt";
         }

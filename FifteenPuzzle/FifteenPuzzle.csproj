@@ -44,11 +44,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlgorithmFactory.cs" />
-    <Compile Include="Converters.cs" />
+    <Compile Include="Solvers\Converters.cs" />
     <Compile Include="Model\Board.cs" />
     <Compile Include="Data\DataReader.cs" />
     <Compile Include="Data\DataWriter.cs" />
-    <Compile Include="Model\Information.cs" />
+    <Compile Include="Model\Statistics.cs" />
     <Compile Include="Model\Node.cs" />
     <Compile Include="Model\Operator.cs" />
     <Compile Include="Program.cs" />
@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram2.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

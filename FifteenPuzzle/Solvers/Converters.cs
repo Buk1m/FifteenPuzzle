@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using FifteenPuzzle.Model;
 
-namespace FifteenPuzzle
+namespace FifteenPuzzle.Solvers
 {
     public static class Converters
     {

@@ -7,7 +7,7 @@ namespace FifteenPuzzle.Data
     {
         public static void WriteSolution( string fileName, string steps )
         {
-            int solutionLength = Information.SolutionLength;
+            int solutionLength = Statistics.SolutionLength;
             using ( StreamWriter streamWriter = new StreamWriter( fileName ) )
             {
                 streamWriter.WriteLine( solutionLength );
@@ -28,11 +28,11 @@ namespace FifteenPuzzle.Data
         {
             using ( StreamWriter streamWriter = new StreamWriter( filename ) )
             {
-                streamWriter.WriteLine( Information.SolutionLength );
-                streamWriter.WriteLine( Information.StatesVisited );
-                streamWriter.WriteLine( Information.StatesProcessed );
-                streamWriter.WriteLine( Information.DeepestLevelReached );
-                streamWriter.WriteLine( Information.ProcessingTime );
+                streamWriter.WriteLine( Statistics.SolutionLength );
+                streamWriter.WriteLine( Statistics.StatesVisited );
+                streamWriter.WriteLine( Statistics.StatesProcessed );
+                streamWriter.WriteLine( Statistics.DeepestLevelReached );
+                streamWriter.WriteLine( Statistics.ProcessingTime );
             }
         }
     }

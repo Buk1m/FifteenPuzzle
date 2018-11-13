@@ -31,17 +31,6 @@ namespace FifteenPuzzle.Model
 
         #endregion
 
-        public IEnumerable<Node> GetNotExploredAdjacentNodes( List<Operator> order, ICollection<string> explored )
-        {
-            IEnumerable<Operator> moves = GetMoves( order );
-            return moves.Select( move => MoveTo( this, move, explored ) ).Where( move => move != null );
-        }
-        public IEnumerable<Node> GetAdjacentNodes( List<Operator> order )
-        {
-            IEnumerable<Operator> moves = GetMoves( order );
-            return moves.Select( move => MoveTo( this, move ) );
-        }
-
         public bool IsSolution()
         {
             if ( IsZeroAtWrongPosition() )
@@ -88,12 +77,24 @@ namespace FifteenPuzzle.Model
             return Board.Values[j + i * Board.X] != j + i * Board.X + 1;
         }
 
-        private List<Operator> GetMoves( List<Operator> order )
+        public List<Operator> GetMoves( List<Operator> order )
         {
             return order.Intersect( Board.AvailableMoves ).ToList();
         }
 
-        private Node MoveTo( Node node, Operator direction, ICollection<string> explored )
+        public Node MoveTo( Node node, Operator direction, Dictionary<string, int> explored )
+        {
+            Board newBoard = node.Board.Clone() as Board;
+            newBoard.MoveEmptyPuzzle( direction );
+
+            if ( explored.ContainsKey( newBoard.ToString() ) &&
+                 explored[ newBoard.ToString() ] < node.CurrentPathCost + 1 )
+                return null;
+
+            return new Node( newBoard, this, direction );
+        }
+
+        public Node MoveTo( Node node, Operator direction, ICollection<string> explored )
         {
             Board newBoard = node.Board.Clone() as Board;
             newBoard.MoveEmptyPuzzle( direction );
@@ -102,14 +103,6 @@ namespace FifteenPuzzle.Model
             {
                 return null;
             }
-
-            return new Node( newBoard, this, direction );
-        }
-
-        private Node MoveTo( Node node, Operator direction )
-        {
-            Board newBoard = node.Board.Clone() as Board;
-            newBoard.MoveEmptyPuzzle( direction );
 
             return new Node( newBoard, this, direction );
         }

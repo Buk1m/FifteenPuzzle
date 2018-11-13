@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using FifteenPuzzle.Model;
 
-namespace FifteenPuzzle
+namespace FifteenPuzzle.Data
 {
     public static class DataReader
     {
